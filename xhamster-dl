@@ -1,0 +1,43 @@
+#!/bin/bash
+
+CMD=`basename $0`
+
+show_help()
+{
+    echo "Usage: $CMD <URL>"
+}
+
+if [ $# -ne 1 ]; then
+    echo "fail! -- expect 1 arguments! ==> $@"
+    show_help
+    exit 1
+fi
+
+URL=$1
+
+echo ""
+echo "Extracting video URL from.. ==> $URL"
+EXTRACTED_URL=`curl $URL       | # download HTML using curl
+        tr -d '\n'             | # remove carriage returns
+        sed 's#</#\n</#g'      | # tokenize by HTML tag
+        grep 'mp4File='        | # locate lines with "mp4File="
+        tr '\n' @              | # tokenize by line
+        cut -d@ -f1            | # isolate first instance
+        sed 's/^.*mp4File=//g' | # remove everything before "mp4File="
+        sed 's/\".*$//g'       | # remove everything after "\""
+        sed 's#\%3A#:#g'       | # replace %3A --> :
+        sed 's#\%2F#/#g'       | # replace %2F --> /
+        sed 's#\%3F#?#g'       | # replace %3F --> ?
+        sed 's#\%2C#,#g'       | # replace %2C --> ,
+        sed 's#\%3D#=#g'       | # replace %3D --> =
+        sed 's#\%26#\&#g'`       # replace %26 --> &
+
+echo ""
+echo "Downloading video from.. ==> $EXTRACTED_URL"
+LOCAL_FILE="`pwd`/`basename $URL`.mp4"
+#curl $EXTRACTED_URL > $LOCAL_FILE
+USER_AGENT="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Ubuntu/10.04 Chromium/7.0.517.44 Chrome/7.0.517.44 Safari/534.7" 
+wget -c -U $USER_AGENT $EXTRACTED_URL -O $LOCAL_FILE
+
+echo ""
+echo "Download complete! ==> $LOCAL_FILE"
