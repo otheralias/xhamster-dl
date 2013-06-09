@@ -26,6 +26,7 @@ EXTRACTED_URL=`curl $URL       | # download HTML using curl
         sed 's/^.*mp4File=//g' | # remove everything before "mp4File="
         sed 's/\".*$//g'       | # remove everything after "\""
         sed 's#\%3A#:#g'       | # replace %3A --> :
+        sed 's#\%3B#;#g'       | # replace %3B --> ;
         sed 's#\%2F#/#g'       | # replace %2F --> /
         sed 's#\%3F#?#g'       | # replace %3F --> ?
         sed 's#\%2C#,#g'       | # replace %2C --> ,
