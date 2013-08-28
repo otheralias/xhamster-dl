@@ -7,6 +7,22 @@ show_help()
     echo "Usage: $CMD <URL>"
 }
 
+find_unique_filename()
+{
+    UNIQUE_FILENAME_VAR=$1
+    FILENAME=$2
+    if [ -f $FILENAME ]; then
+        COUNTER=0
+        while [ -f $FILENAME ]; do
+            echo "File exists! ==> `basename $FILENAME`"
+            FILENAME=`echo $FILENAME | sed "s#[0-9]\+\.#$COUNTER\.#g"`
+            COUNTER=$(( $COUNTER + 1 ))
+        done
+        echo "Saving as.. ==> `basename $FILENAME`"
+    fi
+    $UNIQUE_FILENAME_VAR=$FILENAME
+}
+
 if [ $# -ne 1 ]; then
     echo "fail! -- expect 1 arguments! ==> $@"
     show_help
@@ -36,6 +52,7 @@ EXTRACTED_URL=`curl $URL       | # download HTML using curl
 echo ""
 echo "Downloading video from.. ==> $EXTRACTED_URL"
 LOCAL_FILE="`pwd`/`basename $URL`.mp4"
+find_unique_filename LOCAL_FILE $LOCAL_FILE
 #curl $EXTRACTED_URL > $LOCAL_FILE
 USER_AGENT="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Ubuntu/10.04 Chromium/7.0.517.44 Chrome/7.0.517.44 Safari/534.7" 
 wget -c -U $USER_AGENT $EXTRACTED_URL -O $LOCAL_FILE
