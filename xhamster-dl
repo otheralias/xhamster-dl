@@ -76,9 +76,13 @@ else
     fi
     echo "Saving as new.. ==> `basename $LOCAL_FILE`"
 fi
-#curl $EXTRACTED_URL > $LOCAL_FILE
+touch $LOCAL_FILE
+TEMP=${LOCAL_FILE}.part
+trap "rm -f $TEMP" EXIT
+#curl $EXTRACTED_URL > $TEMP
 USER_AGENT="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Ubuntu/10.04 Chromium/7.0.517.44 Chrome/7.0.517.44 Safari/534.7" 
-wget -c -U $USER_AGENT $EXTRACTED_URL -O $LOCAL_FILE
+wget -c -U $USER_AGENT $EXTRACTED_URL -O $TEMP
+mv $TEMP $LOCAL_FILE
 
 echo ""
 echo "Download complete! ==> $LOCAL_FILE"
