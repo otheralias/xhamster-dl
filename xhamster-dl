@@ -31,6 +31,19 @@ find_unique_filename()
     eval "$UNIQUE_FILENAME_VAR=$FILENAME"
 }
 
+purge_temp()
+{
+    if [ $# -ne 1 ]; then
+        echo "Fail! -- Expecting 1 argument! ==> $@"
+        return 1 # non-zero as false
+    fi
+    local TEMP=$1
+    if [ -f $TEMP ]; then
+        echo  "Safely removing temp file ==> $TEMP"
+        rm -f $TEMP
+    fi
+}
+
 if [ $# -ne 1 -a $# -ne 2 ]; then
     echo "Fail! -- Expecting 1 or 2 arguments! ==> $@"
     show_help
@@ -78,7 +91,7 @@ else
 fi
 touch $LOCAL_FILE
 TEMP=${LOCAL_FILE}.part
-trap "rm -f $TEMP" EXIT
+trap "purge_temp $LOCAL_FILE; purge_temp $TEMP" EXIT
 #curl $EXTRACTED_URL > $TEMP
 USER_AGENT="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Ubuntu/10.04 Chromium/7.0.517.44 Chrome/7.0.517.44 Safari/534.7" 
 wget -c -U $USER_AGENT $EXTRACTED_URL -O $TEMP
