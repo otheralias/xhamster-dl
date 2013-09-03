@@ -31,16 +31,26 @@ find_unique_filename()
     eval "$UNIQUE_FILENAME_VAR=$FILENAME"
 }
 
-purge_temp()
+cleanup()
 {
-    if [ $# -ne 1 ]; then
-        echo "Fail! -- Expecting 1 argument! ==> $@"
+    if [ $# -ne 3 ]; then
+        echo "Fail! -- Expecting 3 argument! ==> $@"
         return 1 # non-zero as false
     fi
-    local TEMP=$1
-    if [ -f $TEMP ]; then
-        echo  "Safely removing temp file ==> $TEMP"
-        rm -f $TEMP
+    local PLACEHOLDER_TEMP=$1
+    local PARTIAL_TEMP=$2
+    local DONE_VAR=$3
+    local DONE_VALUE=0
+    eval "DONE_VALUE=\$$DONE_VAR"
+    if [ $DONE_VALUE -eq 0 ]; then
+        if [ -f $PLACEHOLDER_TEMP ]; then
+            echo  "Safely removing placeholder temp file ==> $PLACEHOLDER_TEMP"
+            rm -f $PLACEHOLDER_TEMP
+        fi
+    fi
+    if [ -f $PARTIAL_TEMP ]; then
+        echo  "Safely removing partial temp file ==> $PARTIAL_TEMP"
+        rm -f $PARTIAL_TEMP
     fi
 }
 
@@ -91,11 +101,13 @@ else
 fi
 touch $LOCAL_FILE
 TEMP=${LOCAL_FILE}.part
-trap "purge_temp $LOCAL_FILE; purge_temp $TEMP" EXIT
+trap "cleanup $LOCAL_FILE $TEMP DONE" EXIT
+DONE=0
 #curl $EXTRACTED_URL > $TEMP
 USER_AGENT="Mozilla/5.0 (X11; U; Linux i686; en-US) AppleWebKit/534.7 (KHTML, like Gecko) Ubuntu/10.04 Chromium/7.0.517.44 Chrome/7.0.517.44 Safari/534.7" 
 wget -c -U $USER_AGENT $EXTRACTED_URL -O $TEMP
 mv $TEMP $LOCAL_FILE
+DONE=1
 
 echo ""
 echo "Download complete! ==> $LOCAL_FILE"
