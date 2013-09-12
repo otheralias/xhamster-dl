@@ -60,6 +60,12 @@ if [ $# -ne 1 -a $# -ne 2 ]; then
     exit 1
 fi
 
+if [ -z "`which curl`" ]; then
+    echo "Fail! -- Requires \"curl\""
+    echo "Hint: sudo aptitude install curl"
+    exit 1
+fi
+
 URL=$1
 FORCE=$2
 
