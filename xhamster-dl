@@ -75,21 +75,20 @@ fi
 
 echo ""
 echo "Extracting video URL from.. ==> $URL"
-EXTRACTED_URL=`curl $URL       | # download HTML using curl
-        tr -d '\n'             | # remove carriage returns
-        sed 's#</#\n</#g'      | # tokenize by HTML tag
-        grep 'mp4File='        | # locate lines with "mp4File="
-        tr '\n' @              | # tokenize by line
-        cut -d@ -f1            | # isolate first instance
-        sed 's/^.*mp4File=//g' | # remove everything before "mp4File="
-        sed 's/\".*$//g'       | # remove everything after "\""
-        sed 's#\%3A#:#g'       | # replace %3A --> :
-        sed 's#\%3B#;#g'       | # replace %3B --> ;
-        sed 's#\%2F#/#g'       | # replace %2F --> /
-        sed 's#\%3F#?#g'       | # replace %3F --> ?
-        sed 's#\%2C#,#g'       | # replace %2C --> ,
-        sed 's#\%3D#=#g'       | # replace %3D --> =
-        sed 's#\%26#\&#g'`       # replace %26 --> &
+EXTRACTED_URL=`curl -s $URL                     | # download HTML using curl
+        tr -d '\n'                              | # remove carriage returns
+        sed 's#</#\n</#g'                       | # tokenize by HTML tag
+        grep 'mp4File='                         | # locate lines with "mp4File="
+        tr '\n' @                               | # tokenize by line
+        cut -d@ -f1                             | # isolate first instance
+        sed 's/^.*mp4File=\([^\"]*\)\".*$/\1/g' | # capture everything between "mp4File=" and "\""
+        sed 's#\%3A#:#g'                        | # replace %3A --> :
+        sed 's#\%3B#;#g'                        | # replace %3B --> ;
+        sed 's#\%2F#/#g'                        | # replace %2F --> /
+        sed 's#\%3F#?#g'                        | # replace %3F --> ?
+        sed 's#\%2C#,#g'                        | # replace %2C --> ,
+        sed 's#\%3D#=#g'                        | # replace %3D --> =
+        sed 's#\%26#\&#g'`                        # replace %26 --> &
 
 echo ""
 echo "Downloading video from.. ==> $EXTRACTED_URL"
