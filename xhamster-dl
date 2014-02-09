@@ -66,6 +66,12 @@ if [ -z "`which curl`" ]; then
     exit 1
 fi
 
+if [ -z "`which wget`" ]; then
+    echo "Fail! -- Requires \"wget\""
+    echo "Hint: sudo aptitude install wget"
+    exit 1
+fi
+
 URL=$1
 FORCE=$2
 

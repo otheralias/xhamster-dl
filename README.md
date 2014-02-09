@@ -22,12 +22,14 @@ Installation (Debian)
 ---------------------
 
 1. git clone https://github.com/otheralias/xhamster-dl.git
-2. sudo aptitude install wget
+2. sudo aptitude install curl
+3. sudo aptitude install wget
 
 Requirements
 ------------
 
 * bash
+* curl
 * wget
 * http://xhamster.com
 
