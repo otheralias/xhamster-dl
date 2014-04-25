@@ -110,8 +110,9 @@ else
     fi
     echo "Saving as new.. ==> `basename $LOCAL_FILE`"
 fi
-touch $LOCAL_FILE
 TEMP=${LOCAL_FILE}.part
+echo -e "#!/bin/bash\n\n$0 $@" > $LOCAL_FILE
+chmod +x $LOCAL_FILE
 trap "cleanup $LOCAL_FILE $TEMP DONE" EXIT
 DONE=0
 #curl $EXTRACTED_URL > $TEMP
