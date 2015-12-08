@@ -3,6 +3,8 @@ xhamster-dl
 
 A script to download xhamster videos.
 
+(NOTE: No longer works: Either use youtube-dl or sign up and get membership)
+
 Usage
 -----
 
